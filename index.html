@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Try Out TKA</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --bg-color: #f4f6f9;
+    }
+    body { 
+      background-color: var(--bg-color); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-size: 1.05rem;
+    }
+    
+    .card { 
+      border-radius: 16px; 
+      border: none; 
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06); 
+      margin-bottom: 16px; 
+    }
+
+    .stimulus { 
+      background: #eef2f7; 
+      padding: 16px; 
+      border-left: 6px solid var(--primary-color); 
+      border-radius: 10px; 
+      font-size: 1.05rem; 
+      line-height: 1.6;
+      margin-bottom: 16px; 
+      text-align: justify; 
+      color: #2b2b2b;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.5;
+    }
+
+    /* Pilihan Jawaban Ramah Sentuhan Layar HP */
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .option-item:active, .option-item:hover {
+      background-color: #e7f1ff;
+      border-color: var(--primary-color);
+    }
+    .option-item input[type="radio"], 
+    .option-item input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-right: 14px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .option-label {
+      font-size: 1.05rem;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+
+    /* Pernyataan Benar/Salah (Radio Button / Centang Dialog) */
+    .bs-statement-box {
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 14px;
+      background-color: #f8f9fa;
+      margin-bottom: 12px;
+    }
+    .bs-choice-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 16px;
+      border: 2px solid #ced4da;
+      border-radius: 8px;
+      background-color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+    .bs-choice-btn input {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+    }
+
+    /* Header Mengambang */
+    .sticky-exam-header {
+      position: sticky;
+      top: 0;
+      z-index: 1020;
+      backdrop-filter: blur(8px);
+      background-color: rgba(13, 110, 253, 0.95);
+      border-radius: 0 0 16px 16px;
+    }
+
+    .hidden-section { display: none !important; }
+
+    .btn-mobile {
+      padding: 14px 22px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+    }
+
+    /* PERBAIKAN CSS NAVIGASI NOMOR SOAL (Rapi & Tidak Terpotong) */
+    .nav-num-btn {
+      min-width: 44px;
+      height: 44px;
+      padding: 0 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      margin: 4px;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container px-3 py-3" style="max-width: 768px;">
+
+  <!-- SECTION 1: FORM LOGIN -->
+  <div id="loginSection" class="card p-4 mx-auto mt-4" style="max-width: 440px;">
+    <div class="text-center mb-4">
+      <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 65px; height: 65px;">
+        <i class="bi bi-file-earmark-text-fill fs-1"></i>
+      </div>
+      <h3 class="fw-bold text-primary">Login Ujian TKA</h3>
+      <p class="text-muted small">Masukkan NISN Anda sebagai Username & Password</p>
+    </div>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label class="form-label fw-bold small">Username (NISN)</label>
+        <div class="input-group input-group-lg">
+          <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+          <input type="number" pattern="\d*" id="username" class="form-control fs-6" placeholder="Masukkan NISN..." required>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-bold small">Password (NISN)</label>
+        <div class="input-group input-group-lg">
+          <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+          <input type="password" id="password" class="form-control fs-6" placeholder="Masukkan NISN..." required>
+        </div>
+      </div>
+      <button type="button" onclick="prosesLogin()" id="btnLogin" class="btn btn-primary w-100 btn-mobile shadow-sm mt-2">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Masuk Ujian
+      </button>
+    </form>
+    <div id="loginAlert" class="mt-3"></div>
+  </div>
+
+  <!-- SECTION 2: PILIH PAKET -->
+  <div id="paketSection" class="hidden-section">
+    <div class="card p-3 bg-primary text-white mb-3">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-person-circle display-5 me-3"></i>
+        <div>
+          <h4 class="mb-0 fw-bold" id="studentNameDisplay">Nama Siswa</h4>
+          <span class="opacity-75 small" id="studentDetailDisplay">NISN: - | Kelas: -</span>
+        </div>
+      </div>
+    </div>
+
+    <h6 class="fw-bold mb-3 text-secondary text-uppercase small">Pilih Paket Ujian yang Tersedia:</h6>
+    
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <div class="card p-3 paket-card" id="cardPaketA" onclick="selectPaket('A')">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-primary mb-0"><i class="bi bi-journal-check me-1"></i> Paket Soal A</h5>
+            <span class="badge bg-primary fs-6">25 Soal</span>
+          </div>
+          <p class="text-muted small mb-2">Try Out Paket A</p>
+          <div id="statusA"></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="card p-3 paket-card" id="cardPaketB" onclick="selectPaket('B')">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold text-primary mb-0"><i class="bi bi-journal-check me-1"></i> Paket Soal B</h5>
+            <span class="badge bg-primary fs-6">25 Soal</span>
+          </div>
+          <p class="text-muted small mb-2">Try Out Paket B</p>
+          <div id="statusB"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: LEMBAR UJIAN (1 SOAL PER TAMPILAN) -->
+  <div id="examSection" class="hidden-section">
+    <!-- Header Sticky Mobile -->
+    <div class="card p-3 text-white sticky-exam-header shadow-sm mb-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge bg-warning text-dark fw-bold me-1" id="activePaketBadge">PAKET A</span>
+          <span class="fw-bold" id="questionProgress">Soal 1 dari 25</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-light text-primary" onclick="requestFullScreen()" title="Layar Penuh">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-light" onclick="kembaliKePilihPaket()">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Container Soal Aktif -->
+    <div id="singleQuestionContainer"></div>
+
+    <!-- Tombol Navigasi Sebelumnya & Berikutnya -->
+    <div class="d-flex justify-content-between gap-2 my-3">
+      <button class="btn btn-outline-secondary btn-mobile flex-fill" id="btnPrev" onclick="navigateQuestion(-1)">
+        <i class="bi bi-arrow-left me-1"></i> Sebelumnya
+      </button>
+      <button class="btn btn-primary btn-mobile flex-fill" id="btnNext" onclick="navigateQuestion(1)">
+        Berikutnya <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+      <button class="btn btn-success btn-mobile flex-fill hidden-section" id="btnSubmitExam" onclick="kirimJawaban()">
+        <i class="bi bi-send-fill me-1"></i> Kirim Ujian
+      </button>
+    </div>
+
+    <!-- Matriks / Daftar Nomor Soal -->
+    <div class="card p-3 text-center">
+      <div class="small fw-bold text-muted mb-2">Navigasi Nomor Soal:</div>
+      <div id="numberGrid" class="d-flex flex-wrap justify-content-center"></div>
+    </div>
+
+    <div id="examAlert" class="mt-2"></div>
+  </div>
+
+  <!-- SECTION 4: HASIL NILAI PERSENTASE -->
+  <div id="resultSection" class="hidden-section text-center">
+    <div class="card p-4">
+      <div class="text-success mb-2">
+        <i class="bi bi-check-circle-fill display-2"></i>
+      </div>
+      <h3 class="fw-bold text-dark">Ujian Berhasil Dikirim!</h3>
+      <p class="text-muted small mb-2">Hasil persentase nilai Anda:</p>
+      
+      <div class="display-1 fw-bold text-primary my-2" id="resultPercentage">0%</div>
+      <div class="badge bg-light text-dark fs-6 fw-normal mb-3 p-2 border" id="resultDetail">0 dari 25 Soal Benar</div>
+      
+      <div class="alert alert-info text-start small mb-3" id="resultRedirectInfo"></div>
+
+      <div id="resultActionButtons"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Link Apps Script
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyysweON2VstWR7zPgKpaNCAu5u4RrvwxB2IabqtgqrnxTyXyx9dxnQA5efIkk1KoRzyg/exec";
+
+  let sessionData = null;
+  let activePaket = null;
+  let currentQuestions = [];
+  let currentIndex = 0;
+  let userAnswers = {};
+
+  function requestFullScreen() {
+    let elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().catch(e => console.log(e));
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen();
+    }
+  }
+
+  function prosesLogin() {
+    let u = document.getElementById("username").value.trim();
+    let p = document.getElementById("password").value.trim();
+    if (!u || !p) { alert("Username dan Password (NISN) wajib diisi!"); return; }
+
+    document.getElementById("btnLogin").disabled = true;
+    document.getElementById("loginAlert").innerHTML = '<div class="alert alert-info py-2 small"><span class="spinner-border spinner-border-sm me-1"></span>Memeriksa akun...</div>';
+
+    fetch(`${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`)
+      .then(res => res.json())
+      .then(res => {
+        document.getElementById("btnLogin").disabled = false;
+        if (res.success) {
+          sessionData = res;
+          showPaketSelection();
+        } else {
+          document.getElementById("loginAlert").innerHTML = `<div class="alert alert-danger py-2 small">${res.message}</div>`;
+        }
+      })
+      .catch(err => {
+        document.getElementById("btnLogin").disabled = false;
+        document.getElementById("loginAlert").innerHTML = `<div class="alert alert-danger py-2 small">Gagal terhubung ke server: ${err}</div>`;
+      });
+  }
+
+  function showPaketSelection() {
+    document.getElementById("loginSection").classList.add("hidden-section");
+    document.getElementById("examSection").classList.add("hidden-section");
+    document.getElementById("resultSection").classList.add("hidden-section");
+    document.getElementById("paketSection").classList.remove("hidden-section");
+
+    document.getElementById("studentNameDisplay").innerText = sessionData.siswa.nama;
+    document.getElementById("studentDetailDisplay").innerText = `NISN: ${sessionData.siswa.nisn} | Kelas: ${sessionData.siswa.kelas}`;
+
+    if (sessionData.status.paketA) {
+      document.getElementById("cardPaketA").onclick = null;
+      document.getElementById("cardPaketA").style.opacity = "0.75";
+      document.getElementById("statusA").innerHTML = `<span class="badge bg-success py-2 w-100"><i class="bi bi-check-all me-1"></i> Selesai (${sessionData.status.nilaiA}%)</span>`;
+    } else {
+      document.getElementById("statusA").innerHTML = `<span class="badge bg-outline-primary text-primary border border-primary py-2 w-100">Belum Dikerjakan</span>`;
+    }
+
+    if (sessionData.status.paketB) {
+      document.getElementById("cardPaketB").onclick = null;
+      document.getElementById("cardPaketB").style.opacity = "0.75";
+      document.getElementById("statusB").innerHTML = `<span class="badge bg-success py-2 w-100"><i class="bi bi-check-all me-1"></i> Selesai (${sessionData.status.nilaiB}%)</span>`;
+    } else {
+      document.getElementById("statusB").innerHTML = `<span class="badge bg-outline-primary text-primary border border-primary py-2 w-100">Belum Dikerjakan</span>`;
+    }
+  }
+
+  function selectPaket(paket) {
+    requestFullScreen();
+    activePaket = paket;
+    currentIndex = 0;
+    userAnswers = {};
+
+    document.getElementById("paketSection").classList.add("hidden-section");
+    document.getElementById("examSection").classList.remove("hidden-section");
+    
+    document.getElementById("activePaketBadge").innerText = `PAKET ${paket}`;
+    document.getElementById("singleQuestionContainer").innerHTML = '<div class="card p-4 text-center text-muted"><span class="spinner-border text-primary mx-auto mb-2"></span>Memuat dan mengacak soal...</div>';
+
+    fetch(`${APPS_SCRIPT_URL}?action=getQuestions&paket=${paket}`)
+      .then(res => res.json())
+      .then(questions => {
+        currentQuestions = questions;
+        renderSingleQuestion();
+        renderNumberGrid();
+        window.scrollTo(0, 0);
+      });
+  }
+
+  function renderSingleQuestion() {
+    let q = currentQuestions[currentIndex];
+    let total = currentQuestions.length;
+    
+    document.getElementById("questionProgress").innerText = `Soal ${currentIndex + 1} dari ${total}`;
+
+    let html = `<div class="card p-3 p-md-4">`;
+    html += `<h5 class="fw-bold text-primary mb-3">Nomor ${currentIndex + 1}</h5>`;
+    if (q.stimulus) html += `<div class="stimulus">${q.stimulus}</div>`;
+    html += `<p class="question-text mb-3">${q.question}</p>`;
+
+    const optionLabels = ["A", "B", "C", "D", "E"];
+
+    if (q.type === 'pg') {
+      q.options.forEach((opt, oIdx) => {
+        let label = optionLabels[oIdx];
+        let checked = (userAnswers[q.id] === opt.code) ? 'checked' : '';
+        html += `
+          <label class="option-item" for="opt_${oIdx}">
+            <input type="radio" name="${q.id}" value="${opt.code}" id="opt_${oIdx}" ${checked} onchange="saveAnswer('${q.id}', '${opt.code}', 'pg')">
+            <div class="option-label"><strong>${label}.</strong> ${opt.text}</div>
+          </label>`;
+      });
+    } 
+    else if (q.type === 'pgk') {
+      html += `<div class="alert alert-warning py-1 px-2 small mb-3"><i class="bi bi-info-circle me-1"></i>Pilih lebih dari satu jawaban yang benar:</div>`;
+      let currentArr = userAnswers[q.id] || [];
+      q.options.forEach((opt, oIdx) => {
+        let label = optionLabels[oIdx];
+        let checked = currentArr.includes(opt.code) ? 'checked' : '';
+        html += `
+          <label class="option-item" for="opt_${oIdx}">
+            <input type="checkbox" name="${q.id}" value="${opt.code}" id="opt_${oIdx}" ${checked} onchange="saveAnswer('${q.id}', '${opt.code}', 'pgk')">
+            <div class="option-label"><strong>${label}.</strong> ${opt.text}</div>
+          </label>`;
+      });
+    } 
+    else if (q.type === 'bs') {
+      let currentBS = userAnswers[q.id] || {};
+      q.statements.forEach((stmt, sIdx) => {
+        let val = currentBS[sIdx] || '';
+        html += `
+          <div class="bs-statement-box">
+            <div class="fw-semibold mb-2" style="font-size:1.05rem;">${sIdx + 1}. ${stmt}</div>
+            <div class="d-flex align-items-center mt-2">
+              <label class="bs-choice-btn ${val === 'Benar' ? 'border-primary bg-primary text-white' : ''}">
+                <input type="radio" name="bs_${q.id}_${sIdx}" value="Benar" ${val === 'Benar' ? 'checked' : ''} onchange="saveAnswerBS('${q.id}', ${sIdx}, 'Benar')">
+                <i class="bi bi-check-circle-fill me-1"></i> Benar
+              </label>
+              <label class="bs-choice-btn ${val === 'Salah' ? 'border-danger bg-danger text-white' : ''}">
+                <input type="radio" name="bs_${q.id}_${sIdx}" value="Salah" ${val === 'Salah' ? 'checked' : ''} onchange="saveAnswerBS('${q.id}', ${sIdx}, 'Salah')">
+                <i class="bi bi-x-circle-fill me-1"></i> Salah
+              </label>
+            </div>
+          </div>`;
+      });
+    }
+
+    html += `</div>`;
+    document.getElementById("singleQuestionContainer").innerHTML = html;
+
+    document.getElementById("btnPrev").disabled = (currentIndex === 0);
+    
+    if (currentIndex === total - 1) {
+      document.getElementById("btnNext").classList.add("hidden-section");
+      document.getElementById("btnSubmitExam").classList.remove("hidden-section");
+    } else {
+      document.getElementById("btnNext").classList.remove("hidden-section");
+      document.getElementById("btnSubmitExam").classList.add("hidden-section");
+    }
+
+    renderNumberGrid();
+  }
+
+  function saveAnswer(qId, val, type) {
+    if (type === 'pg') {
+      userAnswers[qId] = val;
+    } else if (type === 'pgk') {
+      if (!userAnswers[qId]) userAnswers[qId] = [];
+      let idx = userAnswers[qId].indexOf(val);
+      if (idx > -1) {
+        userAnswers[qId].splice(idx, 1);
+      } else {
+        userAnswers[qId].push(val);
+      }
+    }
+    renderNumberGrid();
+  }
+
+  function saveAnswerBS(qId, sIdx, val) {
+    if (!userAnswers[qId]) userAnswers[qId] = {};
+    userAnswers[qId][sIdx] = val;
+    renderSingleQuestion();
+  }
+
+  function navigateQuestion(step) {
+    currentIndex += step;
+    if (currentIndex < 0) currentIndex = 0;
+    if (currentIndex >= currentQuestions.length) currentIndex = currentQuestions.length - 1;
+    renderSingleQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function jumpToQuestion(index) {
+    currentIndex = index;
+    renderSingleQuestion();
+    window.scrollTo(0, 0);
+  }
+
+  function renderNumberGrid() {
+    let html = "";
+    currentQuestions.forEach((q, idx) => {
+      let isAnswered = false;
+      let ans = userAnswers[q.id];
+
+      if (q.type === 'pg' && ans) isAnswered = true;
+      if (q.type === 'pgk' && ans && ans.length > 0) isAnswered = true;
+      if (q.type === 'bs' && ans && Object.keys(ans).length === q.statements.length) isAnswered = true;
+
+      let btnClass = "btn-outline-secondary";
+      if (idx === currentIndex) {
+        btnClass = "btn-primary fw-bold";
+      } else if (isAnswered) {
+        btnClass = "btn-success";
+      }
+
+      html += `<button class="btn nav-num-btn ${btnClass}" onclick="jumpToQuestion(${idx})">${idx + 1}</button>`;
+    });
+    document.getElementById("numberGrid").innerHTML = html;
+  }
+
+  function kirimJawaban() {
+    let formattedAnswers = {};
+    currentQuestions.forEach(q => {
+      if (q.type === 'bs') {
+        let bsObj = userAnswers[q.id] || {};
+        let arr = [];
+        q.statements.forEach((_, sIdx) => {
+          let val = bsObj[sIdx] || "";
+          if (val === "Tepat") val = "Benar";
+          if (val === "Tidak Tepat") val = "Salah";
+          arr.push(val);
+        });
+        formattedAnswers[q.id] = arr;
+      } else {
+        formattedAnswers[q.id] = userAnswers[q.id] || (q.type === 'pgk' ? [] : "");
+      }
+    });
+
+    if (!confirm(`Apakah Anda yakin ingin mengirim seluruh jawaban Paket ${activePaket}?`)) return;
+
+    document.getElementById("btnSubmitExam").disabled = true;
+    document.getElementById("examAlert").innerHTML = '<div class="alert alert-info py-2 small text-center"><span class="spinner-border spinner-border-sm me-1"></span>Mengirimkan jawaban...</div>';
+
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        nisn: sessionData.siswa.nisn,
+        nama: sessionData.siswa.nama,
+        paket: activePaket,
+        answers: formattedAnswers
+      })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success) {
+        if (activePaket === 'A') {
+          sessionData.status.paketA = true;
+          sessionData.status.nilaiA = res.persenNilai;
+        } else {
+          sessionData.status.paketB = true;
+          sessionData.status.nilaiB = res.persenNilai;
+        }
+        showResult(res);
+      } else {
+        document.getElementById("btnSubmitExam").disabled = false;
+        document.getElementById("examAlert").innerHTML = `<div class="alert alert-danger py-2 small">${res.message}</div>`;
+      }
+    });
+  }
+
+  function showResult(res) {
+    document.getElementById("examSection").classList.add("hidden-section");
+    document.getElementById("resultSection").classList.remove("hidden-section");
+
+    document.getElementById("resultPercentage").innerText = `${res.persenNilai}%`;
+    document.getElementById("resultDetail").innerText = `Skor Terjawab: ${res.skorStr}`;
+
+    let paketA_Done = sessionData.status.paketA;
+    let paketB_Done = sessionData.status.paketB;
+
+    let redirectHtml = "";
+    let btnHtml = "";
+
+    if (paketA_Done && paketB_Done) {
+      redirectHtml = `<i class="bi bi-star-fill text-warning me-1"></i><strong>Luar Biasa!</strong> Anda telah menyelesaikan seluruh pengerjaan soal Paket A dan Paket B.`;
+      btnHtml = `<button class="btn btn-primary w-100 btn-mobile" onclick="showPaketSelection()"><i class="bi bi-list-stars me-1"></i> Lihat Status Nilai</button>`;
+    } else if (!paketA_Done) {
+      redirectHtml = `<i class="bi bi-exclamation-triangle-fill text-warning me-1"></i><strong>Langkah Berikutnya:</strong> Anda telah menyelesaikan Paket B. Silakan lanjut mengerjakan <strong>Paket A</strong>.`;
+      btnHtml = `<button class="btn btn-warning w-100 btn-mobile fw-bold" onclick="selectPaket('A')"><i class="bi bi-arrow-right-circle-fill me-1"></i> Lanjut Kerjakan Paket A</button>`;
+    } else if (!paketB_Done) {
+      redirectHtml = `<i class="bi bi-exclamation-triangle-fill text-warning me-1"></i><strong>Langkah Berikutnya:</strong> Anda telah menyelesaikan Paket A. Silakan lanjut mengerjakan <strong>Paket B</strong>.`;
+      btnHtml = `<button class="btn btn-warning w-100 btn-mobile fw-bold" onclick="selectPaket('B')"><i class="bi bi-arrow-right-circle-fill me-1"></i> Lanjut Kerjakan Paket B</button>`;
+    }
+
+    document.getElementById("resultRedirectInfo").innerHTML = redirectHtml;
+    document.getElementById("resultActionButtons").innerHTML = btnHtml;
+    window.scrollTo(0, 0);
+  }
+
+  function kembaliKePilihPaket() {
+    if (confirm("Keluar dari lembar ujian ini? Jawaban sementara akan tersimpan selama halaman tidak di-refresh.")) {
+      showPaketSelection();
+    }
+  }
+</script>
+
+</body>
+</html>
