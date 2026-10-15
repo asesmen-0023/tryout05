@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Try Out TKA</title>
+  <title>Try Out TKA PPKn Kelas 12</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <style>
@@ -75,7 +75,7 @@
       flex-grow: 1;
     }
 
-    /* Pernyataan Benar/Salah (Radio Button / Centang Dialog) */
+    /* Pernyataan Benar/Salah */
     .bs-statement-box {
       border: 2px solid #e9ecef;
       border-radius: 12px;
@@ -120,7 +120,6 @@
       border-radius: 12px;
     }
 
-    /* PERBAIKAN CSS NAVIGASI NOMOR SOAL (Rapi & Tidak Terpotong) */
     .nav-num-btn {
       min-width: 44px;
       height: 44px;
@@ -146,7 +145,7 @@
       <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 65px; height: 65px;">
         <i class="bi bi-file-earmark-text-fill fs-1"></i>
       </div>
-      <h3 class="fw-bold text-primary">Try Out TKA</h3>
+      <h3 class="fw-bold text-primary">Try Out TKA PPKn</h3>
       <p class="text-muted small">Masukkan NISN Anda sebagai Username & Password</p>
     </div>
     <form id="loginForm">
@@ -192,7 +191,7 @@
             <h5 class="fw-bold text-primary mb-0"><i class="bi bi-journal-check me-1"></i> Paket Soal A</h5>
             <span class="badge bg-primary fs-6">25 Soal</span>
           </div>
-          <p class="text-muted small mb-2">Try Out Paket A</p>
+          <p class="text-muted small mb-2">Try Out TKA PPKn - Paket A</p>
           <div id="statusA"></div>
         </div>
       </div>
@@ -203,16 +202,15 @@
             <h5 class="fw-bold text-primary mb-0"><i class="bi bi-journal-check me-1"></i> Paket Soal B</h5>
             <span class="badge bg-primary fs-6">25 Soal</span>
           </div>
-          <p class="text-muted small mb-2">Try Out Paket B</p>
+          <p class="text-muted small mb-2">Try Out TKA PPKn - Paket B</p>
           <div id="statusB"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 3: LEMBAR UJIAN (1 SOAL PER TAMPILAN) -->
+  <!-- SECTION 3: LEMBAR UJIAN -->
   <div id="examSection" class="hidden-section">
-    <!-- Header Sticky Mobile -->
     <div class="card p-3 text-white sticky-exam-header shadow-sm mb-3">
       <div class="d-flex justify-content-between align-items-center">
         <div>
@@ -233,7 +231,7 @@
     <!-- Container Soal Aktif -->
     <div id="singleQuestionContainer"></div>
 
-    <!-- Tombol Navigasi Sebelumnya & Berikutnya -->
+    <!-- Tombol Navigasi -->
     <div class="d-flex justify-content-between gap-2 my-3">
       <button class="btn btn-outline-secondary btn-mobile flex-fill" id="btnPrev" onclick="navigateQuestion(-1)">
         <i class="bi bi-arrow-left me-1"></i> Sebelumnya
@@ -246,7 +244,7 @@
       </button>
     </div>
 
-    <!-- Matriks / Daftar Nomor Soal -->
+    <!-- Navigasi Nomor Soal -->
     <div class="card p-3 text-center">
       <div class="small fw-bold text-muted mb-2">Navigasi Nomor Soal:</div>
       <div id="numberGrid" class="d-flex flex-wrap justify-content-center"></div>
@@ -276,7 +274,6 @@
 </div>
 
 <script>
-  // Link Apps Script
   const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyysweON2VstWR7zPgKpaNCAu5u4RrvwxB2IabqtgqrnxTyXyx9dxnQA5efIkk1KoRzyg/exec";
 
   let sessionData = null;
@@ -333,6 +330,8 @@
       document.getElementById("cardPaketA").style.opacity = "0.75";
       document.getElementById("statusA").innerHTML = `<span class="badge bg-success py-2 w-100"><i class="bi bi-check-all me-1"></i> Selesai (${sessionData.status.nilaiA}%)</span>`;
     } else {
+      document.getElementById("cardPaketA").onclick = () => selectPaket('A');
+      document.getElementById("cardPaketA").style.opacity = "1";
       document.getElementById("statusA").innerHTML = `<span class="badge bg-outline-primary text-primary border border-primary py-2 w-100">Belum Dikerjakan</span>`;
     }
 
@@ -341,6 +340,8 @@
       document.getElementById("cardPaketB").style.opacity = "0.75";
       document.getElementById("statusB").innerHTML = `<span class="badge bg-success py-2 w-100"><i class="bi bi-check-all me-1"></i> Selesai (${sessionData.status.nilaiB}%)</span>`;
     } else {
+      document.getElementById("cardPaketB").onclick = () => selectPaket('B');
+      document.getElementById("cardPaketB").style.opacity = "1";
       document.getElementById("statusB").innerHTML = `<span class="badge bg-outline-primary text-primary border border-primary py-2 w-100">Belum Dikerjakan</span>`;
     }
   }
@@ -349,10 +350,12 @@
     requestFullScreen();
     activePaket = paket;
     currentIndex = 0;
-    userAnswers = {};
+    userAnswers = {}; // Reset jawaban untuk paket baru
 
     document.getElementById("paketSection").classList.add("hidden-section");
+    document.getElementById("resultSection").classList.add("hidden-section");
     document.getElementById("examSection").classList.remove("hidden-section");
+    document.getElementById("examAlert").innerHTML = ""; // Bersihkan alert lama
     
     document.getElementById("activePaketBadge").innerText = `PAKET ${paket}`;
     document.getElementById("singleQuestionContainer").innerHTML = '<div class="card p-4 text-center text-muted"><span class="spinner-border text-primary mx-auto mb-2"></span>Memuat dan mengacak soal...</div>';
@@ -391,19 +394,6 @@
           </label>`;
       });
     } 
-    else if (q.type === 'pgk') {
-      html += `<div class="alert alert-warning py-1 px-2 small mb-3"><i class="bi bi-info-circle me-1"></i>Pilih lebih dari satu jawaban yang benar:</div>`;
-      let currentArr = userAnswers[q.id] || [];
-      q.options.forEach((opt, oIdx) => {
-        let label = optionLabels[oIdx];
-        let checked = currentArr.includes(opt.code) ? 'checked' : '';
-        html += `
-          <label class="option-item" for="opt_${oIdx}">
-            <input type="checkbox" name="${q.id}" value="${opt.code}" id="opt_${oIdx}" ${checked} onchange="saveAnswer('${q.id}', '${opt.code}', 'pgk')">
-            <div class="option-label"><strong>${label}.</strong> ${opt.text}</div>
-          </label>`;
-      });
-    } 
     else if (q.type === 'bs') {
       let currentBS = userAnswers[q.id] || {};
       q.statements.forEach((stmt, sIdx) => {
@@ -433,6 +423,7 @@
     if (currentIndex === total - 1) {
       document.getElementById("btnNext").classList.add("hidden-section");
       document.getElementById("btnSubmitExam").classList.remove("hidden-section");
+      document.getElementById("btnSubmitExam").disabled = false;
     } else {
       document.getElementById("btnNext").classList.remove("hidden-section");
       document.getElementById("btnSubmitExam").classList.add("hidden-section");
@@ -444,14 +435,6 @@
   function saveAnswer(qId, val, type) {
     if (type === 'pg') {
       userAnswers[qId] = val;
-    } else if (type === 'pgk') {
-      if (!userAnswers[qId]) userAnswers[qId] = [];
-      let idx = userAnswers[qId].indexOf(val);
-      if (idx > -1) {
-        userAnswers[qId].splice(idx, 1);
-      } else {
-        userAnswers[qId].push(val);
-      }
     }
     renderNumberGrid();
   }
@@ -483,7 +466,6 @@
       let ans = userAnswers[q.id];
 
       if (q.type === 'pg' && ans) isAnswered = true;
-      if (q.type === 'pgk' && ans && ans.length > 0) isAnswered = true;
       if (q.type === 'bs' && ans && Object.keys(ans).length === q.statements.length) isAnswered = true;
 
       let btnClass = "btn-outline-secondary";
@@ -506,13 +488,11 @@
         let arr = [];
         q.statements.forEach((_, sIdx) => {
           let val = bsObj[sIdx] || "";
-          if (val === "Tepat") val = "Benar";
-          if (val === "Tidak Tepat") val = "Salah";
           arr.push(val);
         });
         formattedAnswers[q.id] = arr;
       } else {
-        formattedAnswers[q.id] = userAnswers[q.id] || (q.type === 'pgk' ? [] : "");
+        formattedAnswers[q.id] = userAnswers[q.id] || "";
       }
     });
 
@@ -545,13 +525,21 @@
         document.getElementById("btnSubmitExam").disabled = false;
         document.getElementById("examAlert").innerHTML = `<div class="alert alert-danger py-2 small">${res.message}</div>`;
       }
+    })
+    .catch(err => {
+      document.getElementById("btnSubmitExam").disabled = false;
+      document.getElementById("examAlert").innerHTML = `<div class="alert alert-danger py-2 small">Gagal mengirim jawaban: ${err}</div>`;
     });
   }
 
   function showResult(res) {
+    // Sembunyikan lembar ujian & bersihkan kontennya
     document.getElementById("examSection").classList.add("hidden-section");
-    document.getElementById("resultSection").classList.remove("hidden-section");
+    document.getElementById("singleQuestionContainer").innerHTML = "";
+    document.getElementById("examAlert").innerHTML = "";
 
+    // Tampilkan kartu hasil
+    document.getElementById("resultSection").classList.remove("hidden-section");
     document.getElementById("resultPercentage").innerText = `${res.persenNilai}%`;
     document.getElementById("resultDetail").innerText = `Skor Terjawab: ${res.skorStr}`;
 
